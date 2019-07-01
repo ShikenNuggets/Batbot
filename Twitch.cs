@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 namespace Batbot{
 	class Twitch{
+		private static readonly TwitchAPI twitchAPI = new TwitchAPI();
+
 		public static readonly Dictionary<string, string> gameIDs = new Dictionary<string, string>{
 			{ "Batman: Arkham Asylum", "21101" },
 			{ "Batman: Arkham City", "26559" },
@@ -14,7 +16,7 @@ namespace Batbot{
 		};
 
 		public static string GetGameID(string gameName){
-			var o = TwitchAPI.Get("games?name=" + gameName);
+			var o = twitchAPI.Get("games?name=" + gameName);
 			if(o == null){
 				return null;
 			}
@@ -23,7 +25,7 @@ namespace Batbot{
 		}
 
 		public static string GetGameName(string gameID){
-			var o = TwitchAPI.Get("games?id=" + gameID);
+			var o = twitchAPI.Get("games?id=" + gameID);
 			if(o == null){
 				return null;
 			}
@@ -32,7 +34,7 @@ namespace Batbot{
 		}
 
 		public static string GetUserName(string userID){
-			var o = TwitchAPI.Get("users?id=" + userID);
+			var o = twitchAPI.Get("users?id=" + userID);
 			if(o == null){
 				return null;
 			}
@@ -41,7 +43,7 @@ namespace Batbot{
 		}
 
 		public static string GetUserID(string userName){
-			var o = TwitchAPI.Get("users?login=" + userName.ToLower());
+			var o = twitchAPI.Get("users?login=" + userName.ToLower());
 			if(o == null){
 				return null;
 			}
@@ -50,7 +52,7 @@ namespace Batbot{
 		}
 
 		public static TwitchUser GetUserByName(string name){
-			var o = TwitchAPI.Get("users?login=" + name.ToLower());
+			var o = twitchAPI.Get("users?login=" + name.ToLower());
 			if(o == null){
 				return null;
 			}
@@ -59,7 +61,7 @@ namespace Batbot{
 		}
 
 		public static TwitchUser GetUserByID(string id){
-			var o = TwitchAPI.Get("users?id=" + id);
+			var o = twitchAPI.Get("users?id=" + id);
 			if(o == null){
 				return null;
 			}
@@ -75,7 +77,7 @@ namespace Batbot{
 				}
 			}
 
-			var o = TwitchAPI.Get(requestString);
+			var o = twitchAPI.Get(requestString);
 			if(o == null){
 				return null;
 			}

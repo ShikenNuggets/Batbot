@@ -1,29 +1,34 @@
-﻿using Newtonsoft.Json.Linq;
-using RestSharp;
+﻿using System.Net.Http;
+using System.Threading.Tasks;
+
+using Newtonsoft.Json.Linq;
 
 namespace Batbot{
 	class TwitchAPI{
-		private static readonly RestClient client = new RestClient("https://api.twitch.tv/helix/");
+		private readonly HttpClient client;
 
-		public static JObject Get(string requestText){
+		public TwitchAPI(){
+			client = new HttpClient();
+			lock(Data.TwitchClientID) client.DefaultRequestHeaders.Add("Client-ID", Data.TwitchClientID);
+		}
+
+		public JObject Get(string requestText){
 			bool hasRetried = false;
 
 			while(true){
-				var request = new RestRequest(requestText, DataFormat.Json);
-				lock(Data.TwitchClientID) request.AddHeader("Client-ID", Data.TwitchClientID);
-
-				IRestResponse response = null;
+				Task<HttpResponseMessage> response = null;
 				lock(client){
 					//Twitch API is rate limited to 30 requests per minute (one every 2 seconds)
 					//Manually throttling ourselves like this is inefficient and error-prone
 					System.Threading.Thread.Sleep(2000);
-					response = client.Get(request);
+					response = client.GetAsync("https://api.twitch.tv/helix/" + requestText);
+					response.Wait();
 				}
 
-				if(response == null){
+				if(response == null || response.IsFaulted || response.IsCanceled){
 					Debug.Log("Error: Unknown REST API Error!", Debug.Verbosity.Error);
 					return null;
-				}else if(response.StatusCode.ToString() == "429"){
+				}else if(response.Result.StatusCode.ToString() == "429"){
 					if(hasRetried){
 						Debug.Log("Error: Rate-limiting issue has been encountered!", Debug.Verbosity.Error);
 						break;
@@ -33,7 +38,7 @@ namespace Batbot{
 					System.Threading.Thread.Sleep(30000);
 					hasRetried = true;
 					continue;
-				}else if(response.StatusCode.ToString() == "503"){
+				}else if(response.Result.StatusCode.ToString() == "503"){
 					if(hasRetried){
 						Debug.Log("Error: Twitch API is currently unavailable!", Debug.Verbosity.Error);
 						break;
@@ -45,17 +50,17 @@ namespace Batbot{
 					continue;
 				}
 
-				if(response.StatusCode != System.Net.HttpStatusCode.OK){
-					Debug.Log("Unhandled HTTP Error: " + response.StatusCode.ToString(), Debug.Verbosity.Error);
+				if(response.Result.StatusCode != System.Net.HttpStatusCode.OK){
+					Debug.Log("Unhandled HTTP Error: " + response.Result.StatusCode.ToString(), Debug.Verbosity.Error);
 					return null;
 				}
 
-				if(!response.IsSuccessful){
+				if(!response.Result.IsSuccessStatusCode){
 					Debug.Log("Error: Unspecified error in Twitch API call!", Debug.Verbosity.Error);
 					return null;
 				}
 
-				return JObject.Parse(response.Content);
+				return JObject.Parse(response.Result.Content.ReadAsStringAsync().Result);
 			}
 
 			return null;
