@@ -321,7 +321,7 @@ namespace Batbot {
 
 			var gameName = Twitch.gameIDs.FirstOrDefault(x => x.Value == ts.gameID).Key;
 			Debug.Log(ts.user + " is live with " + gameName);
-			ApplyCooldown(ts.userID);
+			Task.Run(() => ApplyCooldown(ts.userID));
 			foreach(ulong c in Data.Channels){
 				var announceChannel = _client.GetChannel(c) as SocketTextChannel;
 				await announceChannel.SendMessageAsync(FormatAnnouncementMessage(ts.user, gameName, ts.title));
