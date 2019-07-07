@@ -169,19 +169,23 @@ namespace Batbot{
 				foreach(TwitchStream ts in streams){
 					lock(Data.AnnouncedStreams){
 						if(Data.AnnouncedStreams.Contains(ts.id)){
-							if(Twitch.gameIDs.ContainsValue(ts.gameID)){
-								streamsAnnounced++; //Only count towards the total if it's still a Batman stream
+							if(Twitch.gameIDs.ContainsValue(ts.gameID) && !ts.title.Contains("[nosrl]")){
+								streamsAnnounced++; //Only count towards the total if it's still a Batman speedrunning stream
 							}
 							
 							continue; //We've already announced this stream
 						}
 					}
 
-					if(Twitch.gameIDs.ContainsValue(ts.gameID)){
+					if(Twitch.gameIDs.ContainsValue(ts.gameID) && !ts.title.Contains("[nosrl]")){
 						streamsAnnounced++;
 						await AnnounceStream(ts);
 					}else{
 						if(!loggedStreams.Contains(ts.id)){
+							if(ts.title.Contains("[nosrl]")){
+								Debug.Log(ts.user + " is streaming non-speedrunning content, ignoring...");
+							}
+
 							Debug.Log(ts.user + " is streaming a non-Batman game, ignoring...");
 							loggedStreams.Add(ts.id);
 						}
