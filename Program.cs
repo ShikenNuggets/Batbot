@@ -10,10 +10,24 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 
-namespace Batbot{
+namespace Batbot {
 	public class Program{
 		private static DiscordSocketClient _client;
 		private CommandService _commands;
+
+		private static readonly List<string> streamersOnCooldown = new List<string>();
+
+		bool IsOnCooldown(string twitchID){
+			bool value = false;
+			lock(streamersOnCooldown) value = streamersOnCooldown.Contains(twitchID);
+			return value;
+		}
+
+		void ApplyCooldown(string twitchID){
+			lock(streamersOnCooldown) streamersOnCooldown.Add(twitchID);
+			System.Threading.Thread.Sleep(1000 * 60 * 60); //Wait one hour, TODO - Custom cooldown duration
+			lock(streamersOnCooldown) streamersOnCooldown.Remove(twitchID);
+		}
 
 		[DllImport("Kernel32")]
 		private static extern bool SetConsoleCtrlHandler(HandlerRoutine handler, bool add);
@@ -299,9 +313,15 @@ namespace Batbot{
 			
 			Data.Save();
 
+			if(IsOnCooldown(ts.userID)){
+				Debug.Log(ts.user + " is live, not announcing since they are still on cooldown");
+				return;
+			}
+
 			var gameName = Twitch.gameIDs.FirstOrDefault(x => x.Value == ts.gameID).Key;
 			Debug.Log(ts.user + " is live with " + gameName);
-			foreach (ulong c in Data.Channels){
+			ApplyCooldown(ts.userID);
+			foreach(ulong c in Data.Channels){
 				var announceChannel = _client.GetChannel(c) as SocketTextChannel;
 				await announceChannel.SendMessageAsync(FormatAnnouncementMessage(ts.user, gameName, ts.title));
 			}
