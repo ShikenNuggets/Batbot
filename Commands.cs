@@ -32,12 +32,16 @@ namespace Batbot{
 				"!reset [twitch-user-id] - Resets the name for a particular UserID in the list"
 			}},
 
+			{ "setcooldown", new List<string>{
+				"!setcooldown [hours] - Sets how long I should wait before being able to announce the same streamer again"
+			}},
+
 			{ "setchannel", new List<string>{
 				"!setchannel [#discord-chanel] - Adds or removes Discord channels for streams to be announced in"
 			}},
 
-			{ "updatefrequency", new List<string>{
-				"!updatefrequency [minutes] - Sets how often new streams will be checked for"
+			{ "setupdatefrequency", new List<string>{
+				"!setupdatefrequency [minutes] - Sets how often new streams will be checked for"
 			}}
 		};
 

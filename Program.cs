@@ -93,6 +93,7 @@ namespace Batbot {
 
 			await _commands.AddModulesAsync(assembly: Assembly.GetEntryAssembly(), services: null);
 			await _commands.AddModuleAsync<AddModule>(null);
+			await _commands.AddModuleAsync<CooldownModule>(null);
 			await _commands.AddModuleAsync<HelpModule>(null);
 			await _commands.AddModuleAsync<ListModule>(null);
 			await _commands.AddModuleAsync<MessageModule>(null);
