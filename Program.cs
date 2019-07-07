@@ -23,10 +23,12 @@ namespace Batbot {
 			return value;
 		}
 
-		void ApplyCooldown(string twitchID){
+		void ApplyCooldown(string twitchID, string name){
+			Debug.Log("Placing " + name + " [" + twitchID + "] on cooldown...", Debug.Verbosity.Verbose);
 			lock(streamersOnCooldown) streamersOnCooldown.Add(twitchID);
 			System.Threading.Thread.Sleep((int)(1000.0f * 60.0f * 60.0f * Data.Cooldown)); //Wait [cooldown] hours
 			lock(streamersOnCooldown) streamersOnCooldown.Remove(twitchID);
+			Debug.Log(name + " [" + twitchID + "] removed from cooldown", Debug.Verbosity.Verbose);
 		}
 
 		[DllImport("Kernel32")]
@@ -321,7 +323,7 @@ namespace Batbot {
 
 			var gameName = Twitch.gameIDs.FirstOrDefault(x => x.Value == ts.gameID).Key;
 			Debug.Log(ts.user + " is live with " + gameName);
-			Task.Run(() => ApplyCooldown(ts.userID));
+			Task.Run(() => ApplyCooldown(ts.userID, ts.user));
 			foreach(ulong c in Data.Channels){
 				var announceChannel = _client.GetChannel(c) as SocketTextChannel;
 				await announceChannel.SendMessageAsync(FormatAnnouncementMessage(ts.user, gameName, ts.title));
