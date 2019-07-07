@@ -25,7 +25,7 @@ namespace Batbot {
 
 		void ApplyCooldown(string twitchID){
 			lock(streamersOnCooldown) streamersOnCooldown.Add(twitchID);
-			System.Threading.Thread.Sleep(1000 * 60 * 60); //Wait one hour, TODO - Custom cooldown duration
+			System.Threading.Thread.Sleep((int)(1000.0f * 60.0f * 60.0f * Data.Cooldown)); //Wait [cooldown] hours
 			lock(streamersOnCooldown) streamersOnCooldown.Remove(twitchID);
 		}
 
@@ -169,7 +169,7 @@ namespace Batbot {
 			int iterations = 0;
 			while(true){
 				if(iterations > 0){
-					System.Threading.Thread.Sleep((int)(1000 * 60 * Data.UpdateFrequency)); //Every [updateFrequency] minutes
+					System.Threading.Thread.Sleep((int)(1000.0f * 60.0f * Data.UpdateFrequency)); //Every [updateFrequency] minutes
 				}
 
 				Debug.Log("Checking for new streams to announce...", Debug.Verbosity.Verbose);
