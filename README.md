@@ -17,3 +17,7 @@ The bot isn't really doing anything new or innovative (it's really just using so
 -Non-speedrunning streams are frequently announced. This is not ideal as the focus of the bot is to announce speedrunning streams specifically. [Currently testing an improvement for this](https://github.com/ShikenNuggets/Batbot/pull/1).
 
 -When a streamer briefly disconnects from Twitch and restarts their stream, a new announcement is sent. This can result in the bot posting many announcements for one channel in quick succession (worst case I've seen is 3 within a minute of each other). [Currently testing a fix for this](https://github.com/ShikenNuggets/Batbot/pull/1).
+
+-If there are more than 100 streamers in the announcement list, the Twitch API call may fail. I haven't tested this so I'm not sure what exactly happens, but you can only pass 100 user IDs in a single call. In the event that more than 100 streamers are required, I would need to rework it so that it spreads them out over multiple Twitch API calls.
+
+-It would be useful to be able to see how long it's been since a particular user last streamed, as that data may be relevant if you wish to purge your streamer list.
