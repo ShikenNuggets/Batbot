@@ -70,6 +70,15 @@ namespace Batbot{
 		}
 
 		public static List<TwitchStream> GetCurrentStreams(){
+			int streamCount = 0;
+			lock(Data.Streamers){
+				streamCount = Data.Streamers.Count;
+			}
+
+			if(streamCount == 0){
+				return new List<TwitchStream>();
+			}
+
 			string requestString = "streams?first=100&";
 			lock(Data.Streamers){
 				foreach(string s in Data.Streamers.Values){
