@@ -11,6 +11,7 @@ namespace Batbot{
 		private static readonly string channelsFile = "Data/Channels.txt";
 		private static readonly string announcedStreamsFile = "Data/AnnouncedStreams.txt";
 		private static readonly string updateFrequencyFile = "Data/UpdateFrequency.txt";
+		private static readonly string cooldownFile = "Data/Cooldown.txt";
 		private static readonly string announceMessagesFile = "Data/AnnounceMessages.txt";
 		private static readonly string reactionRoleFile = "Data/ReactionRoles.json";
 
@@ -20,6 +21,7 @@ namespace Batbot{
 		private static List<ulong> _channels = new List<ulong>();
 		private static List<string> _announcedStreams = new List<string>();
 		private static volatile float _updateFrequency = 0.0f;
+		private static volatile float _cooldown = 0.0f;
 		private static List<string> _announceMessages = new List<string>();
 		private static List<ReactionRole> _reactionRoles = new List<ReactionRole>();
 
@@ -51,6 +53,11 @@ namespace Batbot{
 		public static float UpdateFrequency{
 			get{ return _updateFrequency; }
 			set{ _updateFrequency = value; Save(); }
+		}
+
+		public static float Cooldown{
+			get{ return _cooldown; }
+			set{ _cooldown = value; Save(); }
 		}
 
 		public static List<string> AnnounceMessages{
@@ -87,6 +94,12 @@ namespace Batbot{
 				_updateFrequency = 5.0f;
 			}
 
+			if(float.TryParse(System.IO.File.ReadAllText(cooldownFile), out float c)){
+				_cooldown = c;
+			}else{
+				_cooldown = 1.0f;
+			}
+
 			lock(_streamers){
 				_streamers = JsonConvert.DeserializeObject<Dictionary<string, string>>(System.IO.File.ReadAllText(streamersFile));
 				if(_streamers == null){
@@ -115,6 +128,7 @@ namespace Batbot{
 			}
 
 			System.IO.File.WriteAllText(updateFrequencyFile, _updateFrequency.ToString());
+			System.IO.File.WriteAllText(cooldownFile, _cooldown.ToString());
 
 			SerializeRoles();
 		}

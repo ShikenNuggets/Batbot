@@ -10,10 +10,26 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 
-namespace Batbot{
+namespace Batbot {
 	public class Program{
 		private static DiscordSocketClient _client;
 		private CommandService _commands;
+
+		private static readonly List<string> streamersOnCooldown = new List<string>();
+
+		bool IsOnCooldown(string twitchID){
+			bool value = false;
+			lock(streamersOnCooldown) value = streamersOnCooldown.Contains(twitchID);
+			return value;
+		}
+
+		void ApplyCooldown(string twitchID, string name){
+			Debug.Log("Placing " + name + " [" + twitchID + "] on cooldown...", Debug.Verbosity.Verbose);
+			lock(streamersOnCooldown) streamersOnCooldown.Add(twitchID);
+			System.Threading.Thread.Sleep((int)(1000.0f * 60.0f * 60.0f * Data.Cooldown)); //Wait [cooldown] hours
+			lock(streamersOnCooldown) streamersOnCooldown.Remove(twitchID);
+			Debug.Log(name + " [" + twitchID + "] removed from cooldown", Debug.Verbosity.Verbose);
+		}
 
 		[DllImport("Kernel32")]
 		private static extern bool SetConsoleCtrlHandler(HandlerRoutine handler, bool add);
@@ -97,6 +113,7 @@ namespace Batbot{
 
 			await _commands.AddModulesAsync(assembly: Assembly.GetEntryAssembly(), services: null);
 			await _commands.AddModuleAsync<AddModule>(null);
+			await _commands.AddModuleAsync<CooldownModule>(null);
 			await _commands.AddModuleAsync<HelpModule>(null);
 			await _commands.AddModuleAsync<ListModule>(null);
 			await _commands.AddModuleAsync<MessageModule>(null);
@@ -173,7 +190,7 @@ namespace Batbot{
 			int iterations = 0;
 			while(true){
 				if(iterations > 0){
-					System.Threading.Thread.Sleep((int)(1000 * 60 * Data.UpdateFrequency)); //Every [updateFrequency] minutes
+					System.Threading.Thread.Sleep((int)(1000.0f * 60.0f * Data.UpdateFrequency)); //Every [updateFrequency] minutes
 				}
 
 				Debug.Log("Checking for new streams to announce...", Debug.Verbosity.Verbose);
@@ -187,19 +204,23 @@ namespace Batbot{
 				foreach(TwitchStream ts in streams){
 					lock(Data.AnnouncedStreams){
 						if(Data.AnnouncedStreams.Contains(ts.id)){
-							if(Twitch.gameIDs.ContainsValue(ts.gameID)){
-								streamsAnnounced++; //Only count towards the total if it's still a Batman stream
+							if(Twitch.gameIDs.ContainsValue(ts.gameID) && !ts.title.Contains("[nosrl]")){
+								streamsAnnounced++; //Only count towards the total if it's still a Batman speedrunning stream
 							}
 							
 							continue; //We've already announced this stream
 						}
 					}
 
-					if(Twitch.gameIDs.ContainsValue(ts.gameID)){
+					if(Twitch.gameIDs.ContainsValue(ts.gameID) && !ts.title.Contains("[nosrl]")){
 						streamsAnnounced++;
 						await AnnounceStream(ts);
 					}else{
 						if(!loggedStreams.Contains(ts.id)){
+							if(ts.title.Contains("[nosrl]")){
+								Debug.Log(ts.user + " is streaming non-speedrunning content, ignoring...");
+							}
+
 							Debug.Log(ts.user + " is streaming a non-Batman game, ignoring...");
 							loggedStreams.Add(ts.id);
 						}
@@ -313,9 +334,15 @@ namespace Batbot{
 			
 			Data.Save();
 
+			if(IsOnCooldown(ts.userID)){
+				Debug.Log(ts.user + " is live, not announcing since they are still on cooldown");
+				return;
+			}
+
 			var gameName = Twitch.gameIDs.FirstOrDefault(x => x.Value == ts.gameID).Key;
 			Debug.Log(ts.user + " is live with " + gameName);
-			foreach (ulong c in Data.Channels){
+			Task.Run(() => ApplyCooldown(ts.userID, ts.user));
+			foreach(ulong c in Data.Channels){
 				var announceChannel = _client.GetChannel(c) as SocketTextChannel;
 				await announceChannel.SendMessageAsync(FormatAnnouncementMessage(ts.user, gameName, ts.title));
 			}
