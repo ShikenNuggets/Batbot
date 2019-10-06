@@ -220,6 +220,7 @@
     <Compile Include="ReactionRole.cs" />
     <Compile Include="ResetModule.cs" />
     <Compile Include="SetChannelModule.cs" />
+    <Compile Include="StreamerInfo.cs" />
     <Compile Include="Twitch.cs" />
     <Compile Include="TwitchAPI.cs" />
     <Compile Include="TwitchStream.cs" />

@@ -21,23 +21,24 @@ namespace Batbot{
 		public Task ResetAsync([Remainder] [Summary("The text to echo")] string userID){
 			Context.Message.AddReactionAsync(new Discord.Emoji("👍"));
 
-			TwitchUser user = null;
 			lock(Data.Streamers){
-				if(!Data.Streamers.ContainsValue(userID)){
-					return ReplyAsync("No users with that ID are currently in the list.");
-				}
+				foreach(StreamerInfo si in Data.Streamers.Values){
+					if(si.id == userID){
+						TwitchUser user = Twitch.GetUserByID(userID);
+						if(user == null){
+							return ReplyAsync("I couldn't find any Twitch streamers with that ID. Sorry!");
+						}
 
-				user = Twitch.GetUserByID(userID);
-				if(user == null){
-					return ReplyAsync("I couldn't find any Twitch streamers with that ID. Sorry!");
-				}
+						Data.Streamers.Remove(Data.Streamers.FirstOrDefault(x => x.Value.id == userID).Key);
+						Data.Streamers.Add(user.displayName, new StreamerInfo(user.id)); //TAKE OLD LAST STREAM TIME
+						Data.Save();
 
-				Data.Streamers.Remove(Data.Streamers.FirstOrDefault(x => x.Value == userID).Key);
-				Data.Streamers.Add(user.displayName, user.id);
+						return ReplyAsync("Success - data for " + user.displayName + " has been reset.");
+					}
+				}
 			}
 
-			Data.Save();
-			return ReplyAsync("Success - data for " + user.displayName + " has been reset.");
+			return ReplyAsync("No users with that ID are currently in the list.");
 		}
 	}
 }

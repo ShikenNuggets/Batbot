@@ -35,7 +35,7 @@ namespace Batbot{
 				return ReplyAsync("I couldn't find any Twitch streamers with that name. Sorry!");
 			}
 
-			lock(Data.Streamers) Data.Streamers.Add(user.displayName, user.id);
+			lock(Data.Streamers) Data.Streamers.Add(user.displayName, new StreamerInfo(user.id));
 			Data.Save();
 			return ReplyAsync("Success - " + user.displayName + " will now be announced.");
 		}

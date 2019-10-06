@@ -326,12 +326,14 @@ namespace Batbot {
 			lock(Data.Streamers){
 				//If the name we have on file doesn't match the streamer's name, reset the entry
 				if(!Data.Streamers.ContainsKey(ts.user)){
-					var item = Data.Streamers.First(kvp => kvp.Value == ts.userID);
+					var item = Data.Streamers.First(kvp => kvp.Value.id == ts.userID);
 					Data.Streamers.Remove(item.Key);
-					Data.Streamers.Add(ts.user, ts.userID);
+					Data.Streamers.Add(ts.user, new StreamerInfo(ts.userID, DateTime.Now));
 				}
+
+				Data.Streamers[ts.user] = new StreamerInfo(ts.userID, DateTime.Now);
 			}
-			
+
 			Data.Save();
 
 			if(IsOnCooldown(ts.userID)){

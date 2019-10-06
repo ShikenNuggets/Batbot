@@ -81,8 +81,8 @@ namespace Batbot{
 
 			string requestString = "streams?first=100&";
 			lock(Data.Streamers){
-				foreach(string s in Data.Streamers.Values){
-					requestString += "user_id=" + s + "&";
+				foreach(StreamerInfo s in Data.Streamers.Values){
+					requestString += "user_id=" + s.id + "&";
 				}
 			}
 
