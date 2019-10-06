@@ -32,10 +32,28 @@ namespace Batbot{
 			GC.KeepAlive(hr);
 			SetConsoleCtrlHandler(hr, true);
 
-			try{
-				new Program().MainAsync().GetAwaiter().GetResult();
-			}catch(Exception e){
-				Debug.Log("Unhandled Exception! Error: " + e.Message);
+			Program program = null;
+
+			//This is a really garbage way to prevent full crashes - TODO
+			bool successfulExit = false;
+			while(!successfulExit){
+				try{
+					successfulExit = true;
+					program = new Program();
+					program.MainAsync().GetAwaiter().GetResult();
+				}catch(Exception e){
+					successfulExit = false;
+					Debug.Log("Unhandled Exception! Error: " + e.Message);
+
+				#if DEBUG
+					Console.ReadKey();
+				#endif
+
+					Debug.Log("Restarting process, standby...");
+					System.Threading.Thread.Sleep(1000 * 60); //Wait one minute before trying again
+				}finally{
+					program = null;
+				}
 			}
 
 			Environment.Exit(0);
@@ -262,7 +280,7 @@ namespace Batbot{
 
 					if(userIDs.Contains(u.Id) && !u.Roles.Contains(role)){
 						string debugText = "Adding " + role.Name + " role to user " + u.Username;
-						if(u.Nickname.Length > 0){
+						if(u.Nickname != null && u.Nickname.Length > 0){
 							debugText += " (" + u.Nickname + ")";
 						}
 
@@ -270,7 +288,7 @@ namespace Batbot{
 						await u.AddRoleAsync(role);
 					}else if(!userIDs.Contains(u.Id) && u.Roles.Contains(guild.GetRole(rr.role))){
 						string debugText = "Removing " + role.Name + " role from user " + u.Username;
-						if(u.Nickname.Length > 0){
+						if(u.Nickname != null && u.Nickname.Length > 0){
 							debugText += " (" + u.Nickname + ")";
 						}
 

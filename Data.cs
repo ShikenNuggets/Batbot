@@ -64,7 +64,9 @@ namespace Batbot{
 		}
 
 		public static void Initialize(){
-			lock(_discordClientID) _discordClientID = System.IO.File.ReadAllText(discordClientIDFile);
+			CreateFiles();
+
+			lock (_discordClientID) _discordClientID = System.IO.File.ReadAllText(discordClientIDFile);
 			lock(_twitchClientID) _twitchClientID = System.IO.File.ReadAllText(twitchClientIDFile);
 			lock(_announcedStreams) _announcedStreams = new List<string>(System.IO.File.ReadAllLines(announcedStreamsFile));
 			lock(_announceMessages) _announceMessages = new List<string>(System.IO.File.ReadAllLines(announceMessagesFile));
@@ -143,6 +145,64 @@ namespace Batbot{
 
 			lock(_reactionRoles){
 				_reactionRoles = rrs;
+			}
+		}
+
+		private static void CreateFiles(){
+			if(!System.IO.Directory.Exists("Data")){
+				System.IO.Directory.CreateDirectory("Data");
+			}
+
+			if(!System.IO.File.Exists(discordClientIDFile)){
+				Console.WriteLine("Enter your Discord Client ID:");
+				string id = Console.ReadLine();
+
+				System.IO.FileStream stream = System.IO.File.Create(discordClientIDFile);
+				stream.Close();
+
+				System.IO.File.WriteAllText(discordClientIDFile, id);
+			}
+
+			if(!System.IO.File.Exists(twitchClientIDFile)){
+				Console.WriteLine("Enter your Twitch Client ID:");
+				string id = Console.ReadLine();
+
+				System.IO.FileStream stream = System.IO.File.Create(twitchClientIDFile);
+				stream.Close();
+
+				System.IO.File.WriteAllText(twitchClientIDFile, id);
+			}
+
+			if(!System.IO.File.Exists(streamersFile)){
+				System.IO.FileStream stream = System.IO.File.Create(streamersFile);
+				stream.Close();
+				System.IO.File.WriteAllText(streamersFile, JsonConvert.SerializeObject(new Dictionary<string, string>()));
+			}
+
+			if(!System.IO.File.Exists(channelsFile)){
+				System.IO.FileStream stream = System.IO.File.Create(channelsFile);
+				stream.Close();
+			}
+
+			if(!System.IO.File.Exists(announcedStreamsFile)){
+				System.IO.FileStream stream = System.IO.File.Create(announcedStreamsFile);
+				stream.Close();
+			}
+
+			if(!System.IO.File.Exists(updateFrequencyFile)){
+				System.IO.FileStream stream = System.IO.File.Create(updateFrequencyFile);
+				stream.Close();
+			}
+
+			if(!System.IO.File.Exists(announceMessagesFile)){
+				System.IO.FileStream stream = System.IO.File.Create(announceMessagesFile);
+				stream.Close();
+			}
+
+			if(!System.IO.File.Exists(reactionRoleFile)){
+				System.IO.FileStream stream = System.IO.File.Create(reactionRoleFile);
+				stream.Close();
+				//System.IO.File.WriteAllText(reactionRoleFile, JsonConvert.SerializeObject(new List<ReactionRole>()));
 			}
 		}
 	}
