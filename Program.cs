@@ -65,7 +65,7 @@ namespace Batbot {
 					Console.ReadKey();
 				#endif
 
-					Debug.Log("Restarting process, standby...");
+					Debug.Log("Restarting process, standby...", Debug.Verbosity.Error);
 					System.Threading.Thread.Sleep(1000 * 60); //Wait one minute before trying again
 				}finally{
 					program = null;
