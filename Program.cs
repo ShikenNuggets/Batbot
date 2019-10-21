@@ -221,7 +221,7 @@ namespace Batbot {
 								Debug.Log(ts.user + " is streaming non-speedrunning content, ignoring...");
 							}
 
-							Debug.Log(ts.user + " is streaming a non-Batman game, ignoring...");
+							Debug.Log(ts.user + " is streaming a non-Batman game (" + Twitch.GetGameName(ts.gameID) + "), ignoring...");
 							loggedStreams.Add(ts.id);
 						}
 					}
