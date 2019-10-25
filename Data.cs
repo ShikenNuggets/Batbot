@@ -135,6 +135,11 @@ namespace Batbot{
 			SerializeRoles();
 		}
 
+		public static void ClearAnnouncedStreams(){
+			System.IO.File.WriteAllText(announcedStreamsFile, string.Empty);
+			lock(_announcedStreams) _announcedStreams.Clear();
+		}
+
 		private static void SerializeRoles(){
 			List<string> rrText = new List<string>();
 			lock(_reactionRoles){

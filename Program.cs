@@ -201,7 +201,10 @@ namespace Batbot {
 				}
 
 				int streamsAnnounced = 0;
+				int totalLive = 0;
 				foreach(TwitchStream ts in streams){
+					totalLive++;
+
 					lock(Data.AnnouncedStreams){
 						if(Data.AnnouncedStreams.Contains(ts.id)){
 							if(Twitch.gameIDs.ContainsValue(ts.gameID) && !ts.title.Contains("[nosrl]")){
@@ -238,6 +241,10 @@ namespace Batbot {
 				iterations++;
 				Debug.Log(streamsAnnounced + " previously-announced stream(s) are still live with Batman content", Debug.Verbosity.Verbose);
 				Debug.Log("Check " + iterations + " complete. Program is now idle.", Debug.Verbosity.Verbose);
+
+				if(totalLive == 0){
+					Data.ClearAnnouncedStreams();
+				}
 			}
 		}
 
