@@ -17,7 +17,7 @@ namespace Batbot{
 
 		private static string _discordClientID = "";
 		private static string _twitchClientID = "";
-		private static Dictionary<string, string> _streamers = new Dictionary<string, string>();
+		private static Dictionary<string, StreamerInfo> _streamers = new Dictionary<string, StreamerInfo>();
 		private static List<ulong> _channels = new List<ulong>();
 		private static List<string> _announcedStreams = new List<string>();
 		private static volatile float _updateFrequency = 0.0f;
@@ -35,7 +35,7 @@ namespace Batbot{
 			set{ _twitchClientID = value; Save(); }
 		}
 
-		public static Dictionary<string, string> Streamers{
+		public static Dictionary<string, StreamerInfo> Streamers{
 			get{ return _streamers; }
 			set{ _streamers = value; Save(); }
 		}
@@ -100,13 +100,14 @@ namespace Batbot{
 				_cooldown = 1.0f;
 			}
 
-			lock(_streamers){
-				_streamers = JsonConvert.DeserializeObject<Dictionary<string, string>>(System.IO.File.ReadAllText(streamersFile));
-				if(_streamers == null){
-					_streamers = new Dictionary<string, string>();
-				}
-			}
+			//lock(_streamers){
+			//	_streamers = JsonConvert.DeserializeObject<Dictionary<string, StreamerInfo>>(System.IO.File.ReadAllText(streamersFile));
+			//	if(_streamers == null){
+			//		_streamers = new Dictionary<string, StreamerInfo>();
+			//	}
+			//}
 
+			DeserializeStreamers();
 			DeserializeRoles();
 
 			Save();
@@ -130,6 +131,7 @@ namespace Batbot{
 			System.IO.File.WriteAllText(updateFrequencyFile, _updateFrequency.ToString());
 			System.IO.File.WriteAllText(cooldownFile, _cooldown.ToString());
 
+			SerializeStreamers();
 			SerializeRoles();
 		}
 
@@ -159,6 +161,37 @@ namespace Batbot{
 
 			lock(_reactionRoles){
 				_reactionRoles = rrs;
+			}
+		}
+
+		private static void SerializeStreamers(){
+			Dictionary<string, string> streamerText = new Dictionary<string, string>();
+			lock(_streamers){
+				foreach(var pair in _streamers){
+					streamerText.Add(pair.Key, JsonConvert.SerializeObject(pair.Value));
+				}
+			}
+
+			System.IO.File.WriteAllText(streamersFile, JsonConvert.SerializeObject(streamerText));
+		}
+
+		private static void DeserializeStreamers(){
+			Dictionary<string, string> srs = JsonConvert.DeserializeObject<Dictionary<string, string>>(System.IO.File.ReadAllText(streamersFile));
+			if(srs == null){
+				return;
+			}
+
+			foreach(var pair in srs){
+				StreamerInfo info = null;
+				try{
+					info = JsonConvert.DeserializeObject<StreamerInfo>(pair.Value);
+				}catch(Exception){
+					info = new StreamerInfo(pair.Value);
+				}
+
+				if(info != null){
+					lock(_streamers) _streamers.Add(pair.Key, info);
+				}
 			}
 		}
 
@@ -206,6 +239,12 @@ namespace Batbot{
 			if(!System.IO.File.Exists(updateFrequencyFile)){
 				System.IO.FileStream stream = System.IO.File.Create(updateFrequencyFile);
 				stream.Close();
+			}
+
+			if(!System.IO.File.Exists(cooldownFile)){
+				System.IO.FileStream stream = System.IO.File.Create(cooldownFile);
+				stream.Close();
+				System.IO.File.WriteAllText(cooldownFile, (1.0f).ToString());
 			}
 
 			if(!System.IO.File.Exists(announceMessagesFile)){

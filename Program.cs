@@ -65,7 +65,7 @@ namespace Batbot {
 					Console.ReadKey();
 				#endif
 
-					Debug.Log("Restarting process, standby...");
+					Debug.Log("Restarting process, standby...", Debug.Verbosity.Error);
 					System.Threading.Thread.Sleep(1000 * 60); //Wait one minute before trying again
 				}finally{
 					program = null;
@@ -221,7 +221,7 @@ namespace Batbot {
 								Debug.Log(ts.user + " is streaming non-speedrunning content, ignoring...");
 							}
 
-							Debug.Log(ts.user + " is streaming a non-Batman game, ignoring...");
+							Debug.Log(ts.user + " is streaming a non-Batman game (" + Twitch.GetGameName(ts.gameID) + "), ignoring...");
 							loggedStreams.Add(ts.id);
 						}
 					}
@@ -326,12 +326,14 @@ namespace Batbot {
 			lock(Data.Streamers){
 				//If the name we have on file doesn't match the streamer's name, reset the entry
 				if(!Data.Streamers.ContainsKey(ts.user)){
-					var item = Data.Streamers.First(kvp => kvp.Value == ts.userID);
+					var item = Data.Streamers.First(kvp => kvp.Value.id == ts.userID);
 					Data.Streamers.Remove(item.Key);
-					Data.Streamers.Add(ts.user, ts.userID);
+					Data.Streamers.Add(ts.user, new StreamerInfo(ts.userID, DateTime.Now));
 				}
+
+				Data.Streamers[ts.user] = new StreamerInfo(ts.userID, DateTime.Now);
 			}
-			
+
 			Data.Save();
 
 			if(IsOnCooldown(ts.userID)){
