@@ -60,7 +60,12 @@ namespace Batbot{
 					return null;
 				}
 
-				return JObject.Parse(response.Result.Content.ReadAsStringAsync().Result);
+				var data = JObject.Parse(response.Result.Content.ReadAsStringAsync().Result);
+				if(data == null || !data.HasValues || !data.ContainsKey("data") || data["data"] == null || !data["data"].HasValues){
+					return null;
+				}
+
+				return data;
 			}
 
 			return null;
