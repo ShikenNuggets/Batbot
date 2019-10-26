@@ -8,7 +8,8 @@ namespace Batbot{
 			}},
 
 			{ "help", new List<string>{
-				"**!help** - Displays all commands and how to use them"
+				"**!help** - Displays all commands and how to use them",
+				"**!help [sub-command]** - Displays relevant sub-commands and how to use them"
 			}},
 
 			{ "list", new List<string>{
@@ -45,6 +46,10 @@ namespace Batbot{
 			}}
 		};
 
+		public static bool CommandExists(string command){
+			return commands.ContainsKey(command);
+		 }
+
 		public static string GenerateCommandText(){
 			string finalString = "";
 			foreach(List<string> ls in commands.Values){
@@ -59,10 +64,8 @@ namespace Batbot{
 		public static string GenerateCommandText(string command){
 			string finalString = "";
 
-			List<string> text;
-			bool success = commands.TryGetValue(command, out text);
-			if(success){
-				foreach(string s in text){
+			if(CommandExists(command)){
+				foreach(string s in commands[command]){
 					finalString += s + "\n";
 				}
 			}
