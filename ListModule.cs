@@ -17,7 +17,7 @@ namespace Batbot{
 
 				response = "Currently announcing these " + Data.Streamers.Count + " streamers:\n>>> ";
 				foreach(var s in Data.Streamers){
-					response += "**" + SanitizeNameText(s.Key) + "** (" + s.Value.id + ")";
+					response += "**" + Utility.SanitizeForMarkdown(s.Key) + "** (" + s.Value.id + ")";
 					if(s.Value.lastStream.HasValue){
 						response += " (" + s.Value.lastStream.Value.ToShortDateString() + ")";
 					}else{
@@ -28,15 +28,6 @@ namespace Batbot{
 			}
 
 			return ReplyAsync(response);
-		}
-
-		private string SanitizeNameText(string name){
-			string safeName = name;
-			safeName = safeName.Replace("*", "\\*");
-			safeName = safeName.Replace("_", "\\_");
-			safeName = safeName.Replace("~", "\\~");
-
-			return safeName;
 		}
 	}
 }
