@@ -18,7 +18,12 @@ namespace Batbot{
 				response += "The following " + Data.CurrentlyLive.Count + " streamers are currently live:\n>>> ";
 
 				foreach(var s in Data.CurrentlyLive){
-					response += "**" + Utility.SanitizeForMarkdown(s.Key) + "** - " + Utility.SanitizeForMarkdown(s.Value) + "\n";
+					string gameName = s.Value;
+					if(gameName == null){
+						gameName = "Unknown Game";
+					}
+
+					response += "**" + Utility.SanitizeForMarkdown(s.Key) + "** - " + Utility.SanitizeForMarkdown(gameName) + "\n";
 				}
 			}
 
