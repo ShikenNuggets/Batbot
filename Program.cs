@@ -187,10 +187,12 @@ namespace Batbot{
 
 		private async void CheckStreams(){
 			List<string> loggedStreams = new List<string>();
-			Dictionary<string, string> currentLive = new Dictionary<string, string>();
+			Dictionary<string, string> currentLiveStreams;
 
 			int iterations = 0;
 			while(true){
+				currentLiveStreams = new Dictionary<string, string>();
+
 				if(iterations > 0){
 					System.Threading.Thread.Sleep((int)(1000.0f * 60.0f * Data.UpdateFrequency)); //Every [updateFrequency] minutes
 				}
@@ -205,7 +207,7 @@ namespace Batbot{
 				int streamsAnnounced = 0;
 				foreach(TwitchStream ts in streams){
 					string gameName = Twitch.GetGameName(ts.gameID);
-					currentLive.Add(ts.user, gameName);
+					currentLiveStreams.Add(ts.user, gameName);
 
 					lock(Data.AnnouncedStreams){
 						if(Data.AnnouncedStreams.Contains(ts.id)){
@@ -244,7 +246,7 @@ namespace Batbot{
 				Debug.Log(streamsAnnounced + " previously-announced stream(s) are still live with Batman content", Debug.Verbosity.Verbose);
 				Debug.Log("Check " + iterations + " complete. Program is now idle.", Debug.Verbosity.Verbose);
 
-				lock(Data.CurrentlyLive){ Data.CurrentlyLive = currentLive; }
+				lock(Data.CurrentlyLive){ Data.CurrentlyLive = currentLiveStreams; }
 			}
 		}
 
