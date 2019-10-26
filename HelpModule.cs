@@ -9,7 +9,7 @@ namespace Batbot{
 		[Summary("Sends a Help message")]
 		public Task HelpAsync(){
 			Context.Message.AddReactionAsync(new Discord.Emoji("👍"));
-			return ReplyAsync("```\n" + Commands.GenerateCommandText() + "```");
+			return ReplyAsync(">>> " + Commands.GenerateCommandText() + "");
 		}
 	}
 }
