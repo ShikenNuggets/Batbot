@@ -1,4 +1,4 @@
-﻿using System.Linq;
+﻿using System;
 using System.Threading.Tasks;
 
 using Discord.Commands;
@@ -15,19 +15,21 @@ namespace Batbot{
 
 		[Command("reset")]
 		[Summary("Resets the data for a streamer")]
-		public Task ResetAsync([Remainder] [Summary("The text to echo")] string userID){
+		public Task ResetAsync([Remainder] [Summary("The text to echo")] string userName){
 			Context.Message.AddReactionAsync(new Discord.Emoji("👍"));
 
 			lock(Data.Streamers){
-				foreach(StreamerInfo si in Data.Streamers.Values){
-					if(si.id == userID){
-						TwitchUser user = Twitch.GetUserByID(userID);
+				foreach(var si in Data.Streamers){
+					if(si.Key == userName){
+						TwitchUser user = Twitch.GetUserByID(si.Value.id);
 						if(user == null){
-							return ReplyAsync("I couldn't find any Twitch streamers with that ID. Sorry!");
+							return ReplyAsync("I couldn't find that Twitch streamer. Sorry!");
 						}
 
-						Data.Streamers.Remove(Data.Streamers.FirstOrDefault(x => x.Value.id == userID).Key);
-						Data.Streamers.Add(user.displayName, new StreamerInfo(user.id)); //TAKE OLD LAST STREAM TIME
+						DateTime? lastStreamTime = si.Value.lastStream;
+
+						Data.Streamers.Remove(userName);
+						Data.Streamers.Add(user.displayName, new StreamerInfo(user.id, lastStreamTime));
 						Data.Save();
 
 						return ReplyAsync("Success - data for " + user.displayName + " has been reset.");

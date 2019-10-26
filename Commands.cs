@@ -34,7 +34,7 @@ namespace Batbot{
 			}},
 
 			{ "reset", new List<string>{
-				"**!reset [twitch-user-id]** - Resets the name for a particular UserID in the list"
+				"**!reset [twitch-user-name]** - Resets the name for a particular streamer in the list"
 			}},
 
 			{ "setcooldown", new List<string>{
