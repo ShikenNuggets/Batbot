@@ -116,6 +116,7 @@ namespace Batbot {
 			await _commands.AddModuleAsync<CooldownModule>(null);
 			await _commands.AddModuleAsync<HelpModule>(null);
 			await _commands.AddModuleAsync<ListModule>(null);
+			await _commands.AddModuleAsync<LiveModule>(null);
 			await _commands.AddModuleAsync<MessageModule>(null);
 			await _commands.AddModuleAsync<ReactionModule>(null);
 			await _commands.AddModuleAsync<ResetModule>(null);
@@ -186,6 +187,7 @@ namespace Batbot {
 
 		private async void CheckStreams(){
 			List<string> loggedStreams = new List<string>();
+			Dictionary<string, string> currentLive = new Dictionary<string, string>();
 
 			int iterations = 0;
 			while(true){
@@ -202,6 +204,9 @@ namespace Batbot {
 
 				int streamsAnnounced = 0;
 				foreach(TwitchStream ts in streams){
+					string gameName = Twitch.GetGameName(ts.gameID);
+					currentLive.Add(ts.user, gameName);
+
 					lock(Data.AnnouncedStreams){
 						if(Data.AnnouncedStreams.Contains(ts.id)){
 							if(Twitch.gameIDs.ContainsValue(ts.gameID) && !ts.title.Contains("[nosrl]")){
@@ -221,7 +226,7 @@ namespace Batbot {
 								Debug.Log(ts.user + " is streaming non-speedrunning content, ignoring...");
 							}
 
-							Debug.Log(ts.user + " is streaming a non-Batman game (" + Twitch.GetGameName(ts.gameID) + "), ignoring...");
+							Debug.Log(ts.user + " is streaming a non-Batman game (" + gameName + "), ignoring...");
 							loggedStreams.Add(ts.id);
 						}
 					}
@@ -238,6 +243,8 @@ namespace Batbot {
 				iterations++;
 				Debug.Log(streamsAnnounced + " previously-announced stream(s) are still live with Batman content", Debug.Verbosity.Verbose);
 				Debug.Log("Check " + iterations + " complete. Program is now idle.", Debug.Verbosity.Verbose);
+
+				lock(Data.CurrentlyLive){ Data.CurrentlyLive = currentLive; }
 			}
 		}
 

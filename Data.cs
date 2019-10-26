@@ -24,6 +24,7 @@ namespace Batbot{
 		private static volatile float _cooldown = 0.0f;
 		private static List<string> _announceMessages = new List<string>();
 		private static List<ReactionRole> _reactionRoles = new List<ReactionRole>();
+		private static Dictionary<string, string> _currentlyLive = new Dictionary<string, string>();
 
 		public static string DiscordClientID{
 			get{ return _discordClientID; }
@@ -68,6 +69,11 @@ namespace Batbot{
 		public static List<ReactionRole> ReactionRoles{
 			get{ return _reactionRoles; }
 			set{ _reactionRoles = value; Save(); }
+		}
+
+		public static Dictionary<string, string> CurrentlyLive{
+			get{ return _currentlyLive; }
+			set{ _currentlyLive = value; }
 		}
 
 		public static void Initialize(){

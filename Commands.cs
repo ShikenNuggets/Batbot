@@ -16,6 +16,10 @@ namespace Batbot{
 				"**!list** - Lists user IDs for all Twitch streamers"
 			}},
 
+			{ "live", new List<string>{
+				"**!live** - Lists all streamers who are currently live"
+			}},
+
 			{ "message", new List<string>{
 				"**!message list** - Lists all custom messages",
 				"**!message add [message]** - Creates a new custom message",
