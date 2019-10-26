@@ -20,8 +20,6 @@ namespace Batbot{
 					response += "**" + Utility.SanitizeForMarkdown(s.Key) + "** (" + s.Value.id + ")";
 					if(s.Value.lastStream.HasValue){
 						response += " (" + s.Value.lastStream.Value.ToShortDateString() + ")";
-					}else{
-						response += " (unknown)";
 					}
 					response += "\n";
 				}

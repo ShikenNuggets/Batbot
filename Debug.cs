@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Batbot{
 	class Debug{
@@ -15,17 +11,14 @@ namespace Batbot{
 		}
 
 		public static bool Initialize(){
-			lock(path) System.IO.File.AppendAllText(path, path + "\n");
+			System.IO.File.AppendAllText(path, path + "\n");
 			return true;
 		}
 
 		public static void Log(string message, Verbosity verbosity = Verbosity.Info){
-			lock(path){
-				Console.WriteLine(message);
-
-				if(verbosity > Verbosity.Verbose){
-					System.IO.File.AppendAllText(path, message + "\n");
-				}
+			Console.WriteLine(message);
+			if(verbosity > Verbosity.Verbose){
+				System.IO.File.AppendAllText(path, message + "\n");
 			}
 		}
 	}

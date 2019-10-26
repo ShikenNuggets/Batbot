@@ -10,7 +10,7 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 
-namespace Batbot {
+namespace Batbot{
 	public class Program{
 		private static DiscordSocketClient _client;
 		private CommandService _commands;

@@ -2,7 +2,7 @@
 
 namespace Batbot{
 	class Commands{
-		public static readonly Dictionary<string, List<string>> commands = new Dictionary<string, List<string>>{
+		private static readonly Dictionary<string, List<string>> commands = new Dictionary<string, List<string>>{
 			{ "add", new List<string>{
 				"**!add [twitch]** - Adds or removes a Twitch streamer from the list"
 			}},
@@ -17,7 +17,7 @@ namespace Batbot{
 			}},
 
 			{ "live", new List<string>{
-				"**!live** - Lists all streamers who are currently live"
+				"**!live** - Lists all Twitch streamers who are currently live"
 			}},
 
 			{ "message", new List<string>{
@@ -28,9 +28,9 @@ namespace Batbot{
 			}},
 
 			{ "reaction", new List<string>{
-				"**!reaction add [message-id] [channel] [emote] [role]** - Creates a ReactionRole",
-				"**!reaction remove [index]** - Removes a ReactionRole at the specified index",
-				"**!reaction list** - Lists all ReactionRoles for this server"
+				"**!reaction add [message-id] [channel] [emote] [role]** - Creates a Reaction Role",
+				"**!reaction remove [index]** - Removes a Reaction Role at the specified index",
+				"**!reaction list** - Lists all Reaction Roles for this server"
 			}},
 
 			{ "reset", new List<string>{
