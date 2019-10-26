@@ -32,7 +32,7 @@ namespace Batbot{
 						Data.Streamers.Add(user.displayName, new StreamerInfo(user.id, lastStreamTime));
 						Data.Save();
 
-						return ReplyAsync("Success - data for " + user.displayName + " has been reset.");
+						return ReplyAsync("Success - data for **" + Utility.SanitizeForMarkdown(user.displayName) + "** has been reset.");
 					}
 				}
 			}

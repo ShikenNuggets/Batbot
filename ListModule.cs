@@ -17,7 +17,7 @@ namespace Batbot{
 
 				response = "Currently announcing these " + Data.Streamers.Count + " streamers:\n>>> ";
 				foreach(var s in Data.Streamers){
-					response += "**" + Utility.SanitizeForMarkdown(s.Key) + "** (" + s.Value.id + ")";
+					response += "**" + Utility.SanitizeForMarkdown(s.Key) + "**";
 					if(s.Value.lastStream.HasValue){
 						response += " (" + s.Value.lastStream.Value.ToShortDateString() + ")";
 					}
