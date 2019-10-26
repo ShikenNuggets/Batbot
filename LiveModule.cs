@@ -9,11 +9,13 @@ namespace Batbot{
 		public Task LiveAsync(){
 			Context.Message.AddReactionAsync(new Discord.Emoji("👍"));
 
-			string response = "The following streamers are currently live:\n>>> ";
+			string response = "";
 			lock(Data.CurrentlyLive){
 				if(Data.CurrentlyLive.Count == 0){
 					return ReplyAsync("No streamers are currently live.");
 				}
+
+				response += "The following " + Data.CurrentlyLive.Count + " streamers are currently live:\n>>> ";
 
 				foreach(var s in Data.CurrentlyLive){
 					response += "**" + Utility.SanitizeForMarkdown(s.Key) + "** - " + Utility.SanitizeForMarkdown(s.Value) + "\n";
