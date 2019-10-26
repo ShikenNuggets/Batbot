@@ -360,9 +360,9 @@ namespace Batbot {
 				}
 			}
 
-			message = message.Replace("{user}", userName);
-			message = message.Replace("{game}", gameName);
-			message = message.Replace("{title}", title);
+			message = message.Replace("{user}", Utility.SanitizeForMarkdown(userName));
+			message = message.Replace("{game}", Utility.SanitizeForMarkdown(gameName));
+			message = message.Replace("{title}", Utility.SanitizeForMarkdown(title));
 			message = message.Replace("{link}", "https://www.twitch.tv/" + userName.ToLower());
 
 			return message;
