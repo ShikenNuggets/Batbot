@@ -17,7 +17,7 @@ namespace Batbot{
 
 		public static string GetGameID(string gameName){
 			var o = twitchAPI.Get("games?name=" + gameName);
-			if(o == null){
+			if(o == null || !o["data"].HasValues){
 				return null;
 			}
 
@@ -26,7 +26,7 @@ namespace Batbot{
 
 		public static string GetGameName(string gameID){
 			var o = twitchAPI.Get("games?id=" + gameID);
-			if(o == null){
+			if(o == null || !o["data"].HasValues){
 				return null;
 			}
 
@@ -35,7 +35,7 @@ namespace Batbot{
 
 		public static string GetUserName(string userID){
 			var o = twitchAPI.Get("users?id=" + userID);
-			if(o == null){
+			if(o == null || !o["data"].HasValues){
 				return null;
 			}
 
@@ -44,7 +44,7 @@ namespace Batbot{
 
 		public static string GetUserID(string userName){
 			var o = twitchAPI.Get("users?login=" + userName.ToLower());
-			if(o == null){
+			if(o == null || !o["data"].HasValues){
 				return null;
 			}
 
@@ -53,7 +53,7 @@ namespace Batbot{
 
 		public static TwitchUser GetUserByName(string name){
 			var o = twitchAPI.Get("users?login=" + name.ToLower());
-			if(o == null){
+			if(o == null || !o["data"].HasValues){
 				return null;
 			}
 
@@ -62,7 +62,7 @@ namespace Batbot{
 
 		public static TwitchUser GetUserByID(string id){
 			var o = twitchAPI.Get("users?id=" + id);
-			if(o == null){
+			if(o == null || !o["data"].HasValues){
 				return null;
 			}
 
