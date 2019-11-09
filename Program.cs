@@ -201,6 +201,7 @@ namespace Batbot{
 				List<TwitchStream> streams = Twitch.GetCurrentStreams();
 				if(streams == null){
 					Debug.Log("An error has occured while attempting to get streams, restarting process...", Debug.Verbosity.Error);
+					System.Threading.Thread.Sleep(1000 * 30); //Wait 30 seconds before starting over
 					continue;
 				}
 
