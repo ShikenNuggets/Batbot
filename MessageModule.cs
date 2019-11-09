@@ -10,7 +10,7 @@ namespace Batbot{
 		public Task MessageAsync(){
 			Context.Message.AddReactionAsync(new Discord.Emoji("👍"));
 
-			string response = "```Custom announcement messages:\n";
+			string response = "Custom announcement messages:\n>>> ";
 			lock(Data.AnnounceMessages){
 				if(Data.AnnounceMessages.Count == 0){
 					return ReplyAsync("There are no custom messages set.");
@@ -18,11 +18,10 @@ namespace Batbot{
 
 				int index = 0;
 				foreach(string s in Data.AnnounceMessages){
-					response += index + ": " + s + "\n";
+					response += index + ": `" + s + "`\n";
 					index++;
 				}
 			}
-			response += "```";
 
 			return ReplyAsync(response);
 		}

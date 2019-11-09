@@ -53,7 +53,7 @@ namespace Batbot{
 
 		public static TwitchUser GetUserByName(string name){
 			var o = twitchAPI.Get("users?login=" + name.ToLower());
-			if(o == null){
+			if(o == null || o["data"] == null || !o["data"].HasValues){
 				return null;
 			}
 

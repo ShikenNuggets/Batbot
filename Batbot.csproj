@@ -214,6 +214,7 @@
     <Compile Include="HelpModule.cs" />
     <Compile Include="EmojiTypeReader.cs" />
     <Compile Include="ListModule.cs" />
+    <Compile Include="LiveModule.cs" />
     <Compile Include="MessageModule.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ReactionModule.cs" />
@@ -226,6 +227,7 @@
     <Compile Include="TwitchStream.cs" />
     <Compile Include="TwitchUser.cs" />
     <Compile Include="UpdateFrequencyModule.cs" />
+    <Compile Include="Utility.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets')" />

@@ -27,7 +27,7 @@ namespace Batbot{
 
 			if(containsKey){
 				Data.Save();
-				return ReplyAsync("Success - " + streamerName + " will no longer be announced.");
+				return ReplyAsync("Success - **" + Utility.SanitizeForMarkdown(streamerName) + "** will no longer be announced.");
 			}
 
 			TwitchUser user = Twitch.GetUserByName(streamerName);
@@ -37,7 +37,7 @@ namespace Batbot{
 
 			lock(Data.Streamers) Data.Streamers.Add(user.displayName, new StreamerInfo(user.id));
 			Data.Save();
-			return ReplyAsync("Success - " + user.displayName + " will now be announced.");
+			return ReplyAsync("Success - **" + Utility.SanitizeForMarkdown(user.displayName) + "** will now be announced.");
 		}
 	}
 }

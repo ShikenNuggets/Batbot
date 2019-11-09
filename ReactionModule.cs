@@ -44,6 +44,10 @@ namespace Batbot{
 					return ReplyAsync("Error! Value must be between 0 and " + Data.ReactionRoles.Count + "!");
 				}
 
+				if(Context.Guild.Id != Data.ReactionRoles[index].guildID){
+					return ReplyAsync("You do not have permission to remove this Reaction Role");
+				}
+
 				//TODO - Remove emote reaction from specified message
 
 				Data.ReactionRoles.RemoveAt(index);
@@ -57,14 +61,11 @@ namespace Batbot{
 		[Summary("List all ReactionRoles")]
 		public Task ListReactionsAsync(){
 			Context.Message.AddReactionAsync(new Discord.Emoji("👍"));
-			string responseText = "```ReactionRoles:\n";
+			string responseText = "Reaction Roles:\n>>> ";
 
 			lock(Data.ReactionRoles){
-				if(Data.ReactionRoles.Count == 0){
-					return ReplyAsync("There are no ReactionRoles set.");
-				}
-
 				int index = 0;
+				int relevantRRs = 0;
 				foreach(var rr in Data.ReactionRoles){
 					if(Context.Guild.Id != rr.guildID){
 						index++;
@@ -73,10 +74,14 @@ namespace Batbot{
 
 					responseText += index.ToString() + ": MessageID(" + rr.messageID + ") - Emote(" + rr.emote + ") - Role(" + Context.Guild.GetRole(rr.role).ToString() + ")\n";
 					index++;
+					relevantRRs++;
+				}
+
+				if(Data.ReactionRoles.Count == 0 || relevantRRs == 0){
+					return ReplyAsync("There are no Reaction Roles set.");
 				}
 			}
 
-			responseText += "```";
 			return ReplyAsync(responseText);
 		}
 	}
