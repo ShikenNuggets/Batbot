@@ -208,7 +208,12 @@ namespace Batbot{
 				int streamsAnnounced = 0;
 				foreach(TwitchStream ts in streams){
 					string gameName = Twitch.GetGameName(ts.gameID);
-					currentLiveStreams.Add(ts.user, gameName);
+
+					if(ts.title.Contains("[nosrl]")){
+						currentLiveStreams.Add(ts.user, gameName + " [nosrl]");
+					}else{
+						currentLiveStreams.Add(ts.user, gameName);
+					}
 
 					lock(Data.AnnouncedStreams){
 						if(Data.AnnouncedStreams.Contains(ts.id)){
