@@ -207,7 +207,12 @@ namespace Batbot{
 
 				int streamsAnnounced = 0;
 				foreach(TwitchStream ts in streams){
-					string gameName = Twitch.GetGameName(ts.gameID);
+					string gameName;
+					if(Data.IsCached(ts.id)){
+						gameName = Data.GetCachedGame(ts.id);
+					}else{
+						gameName = Data.CacheGame(ts.id, Twitch.GetGameName(ts.gameID));
+					}
 
 					if(ts.title.Contains("[nosrl]")){
 						currentLiveStreams.Add(ts.user, gameName + " [nosrl]");
@@ -253,6 +258,7 @@ namespace Batbot{
 				Debug.Log("Check " + iterations + " complete. Program is now idle.", Debug.Verbosity.Verbose);
 
 				lock(Data.CurrentlyLive){ Data.CurrentlyLive = currentLiveStreams; }
+				Data.Save();
 			}
 		}
 

@@ -13,6 +13,7 @@ namespace Batbot{
 		private static readonly string cooldownFile = "Data/Cooldown.txt";
 		private static readonly string announceMessagesFile = "Data/AnnounceMessages.txt";
 		private static readonly string reactionRoleFile = "Data/ReactionRoles.json";
+		private static readonly string cachedGamesFile = "Data/CachedGames.json";
 
 		private static string _discordClientID = "";
 		private static string _twitchClientID = "";
@@ -24,6 +25,7 @@ namespace Batbot{
 		private static List<string> _announceMessages = new List<string>();
 		private static List<ReactionRole> _reactionRoles = new List<ReactionRole>();
 		public static Dictionary<string, string> CurrentlyLive = new Dictionary<string, string>();
+		private static Dictionary<string, string> CachedGames = new Dictionary<string, string>();
 
 		public static string DiscordClientID{
 			get{ return _discordClientID; }
@@ -100,6 +102,10 @@ namespace Batbot{
 				_cooldown = 1.0f;
 			}
 
+			lock(CachedGames){
+				CachedGames = JsonConvert.DeserializeObject<Dictionary<string, string>>(System.IO.File.ReadAllText(cachedGamesFile));
+			}
+
 			DeserializeStreamers();
 			DeserializeRoles();
 
@@ -124,6 +130,10 @@ namespace Batbot{
 			System.IO.File.WriteAllText(updateFrequencyFile, _updateFrequency.ToString());
 			System.IO.File.WriteAllText(cooldownFile, _cooldown.ToString());
 
+			lock(CachedGames){
+				System.IO.File.WriteAllText(cachedGamesFile, JsonConvert.SerializeObject(CachedGames));
+			}
+
 			SerializeStreamers();
 			SerializeRoles();
 		}
@@ -131,6 +141,27 @@ namespace Batbot{
 		public static void ClearAnnouncedStreams(){
 			System.IO.File.WriteAllText(announcedStreamsFile, string.Empty);
 			lock(_announcedStreams) _announcedStreams.Clear();
+		}
+
+		public static bool IsCached(string id){
+			return CachedGames.ContainsKey(id);
+		}
+
+		public static string CacheGame(string id, string name){
+			if(IsCached(id)){
+				return "";
+			}
+
+			CachedGames.Add(id, name);
+			return name;
+		}
+
+		public static string GetCachedGame(string id){
+			if(IsCached(id)){
+				return CachedGames[id];
+			}
+
+			return string.Empty;
 		}
 
 		private static void SerializeRoles(){
@@ -253,6 +284,12 @@ namespace Batbot{
 			if(!System.IO.File.Exists(reactionRoleFile)){
 				System.IO.FileStream stream = System.IO.File.Create(reactionRoleFile);
 				stream.Close();
+			}
+
+			if(!System.IO.File.Exists(cachedGamesFile)){
+				System.IO.FileStream stream = System.IO.File.Create(cachedGamesFile);
+				stream.Close();
+				System.IO.File.WriteAllText(cachedGamesFile, JsonConvert.SerializeObject(new Dictionary<string, string>()));
 			}
 		}
 	}
