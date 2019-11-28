@@ -138,9 +138,14 @@ namespace Batbot{
 			SerializeRoles();
 		}
 
-		public static void ClearAnnouncedStreams(){
-			System.IO.File.WriteAllText(announcedStreamsFile, string.Empty);
-			lock(_announcedStreams) _announcedStreams.Clear();
+		public static void ClearCache(){
+			if(CurrentlyLive.Count == 0){
+				System.IO.File.WriteAllText(announcedStreamsFile, string.Empty);
+				lock (_announcedStreams) _announcedStreams.Clear();
+			}
+
+			System.IO.File.WriteAllText(cachedGamesFile, string.Empty);
+			lock(CachedGames) CachedGames.Clear();
 		}
 
 		public static bool IsCached(string id){
