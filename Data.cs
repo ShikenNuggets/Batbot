@@ -104,6 +104,9 @@ namespace Batbot{
 
 			lock(CachedGames){
 				CachedGames = JsonConvert.DeserializeObject<Dictionary<string, string>>(System.IO.File.ReadAllText(cachedGamesFile));
+				if(CachedGames == null){
+					CachedGames = new Dictionary<string, string>();
+				}
 			}
 
 			DeserializeStreamers();
