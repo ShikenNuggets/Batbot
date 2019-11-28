@@ -8,8 +8,7 @@ namespace Batbot{
 		[Summary("Adds a streamer to the list")]
 		public Task AddAsync(){
 			Context.Message.AddReactionAsync(new Discord.Emoji("👎")); //Thumbs down on incorrect command usage
-
-			return ReplyAsync("```\n" + Commands.GenerateCommandText("add") + "```");
+			return ReplyAsync(">>> " + Commands.GenerateCommandText("add"));
 		}
 
 		[Command("add")]

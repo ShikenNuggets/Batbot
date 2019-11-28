@@ -12,7 +12,7 @@ namespace Batbot{
 		public Task AddReactionAsync(){
 			Context.Message.AddReactionAsync(new Discord.Emoji("👎"));
 
-			return ReplyAsync("```\n" + Commands.GenerateCommandText("reaction") + "```");
+			return ReplyAsync(">>> " + Commands.GenerateCommandText("reaction"));
 		}
 
 		[Command("add")]

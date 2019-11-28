@@ -8,14 +8,14 @@ namespace Batbot{
 		[Summary("Sets how long to wait before being able to announce the same streamer again")]
 		public Task SetChannelAsync(){
 			Context.Message.AddReactionAsync(new Discord.Emoji("👎"));
-			return ReplyAsync("```\n" + Commands.GenerateCommandText("setcooldown") + "```");
+			return ReplyAsync(">>> " + Commands.GenerateCommandText("setcooldown"));
 		}
 
 		[Command("setcooldown")]
 		[Summary("Sets how long to wait before being able to announce the same streamer again")]
 		public Task SetChannelAsync(string _){
 			Context.Message.AddReactionAsync(new Discord.Emoji("👎"));
-			return ReplyAsync("```\n" + Commands.GenerateCommandText("setcooldown") + "```");
+			return ReplyAsync(">>> " + Commands.GenerateCommandText("setcooldown"));
 		}
 
 		[Command("setcooldown")]

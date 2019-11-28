@@ -8,14 +8,14 @@ namespace Batbot{
 		[Summary("Sets how often new streams should be checked for")]
 		public Task SetChannelAsync(){
 			Context.Message.AddReactionAsync(new Discord.Emoji("👎"));
-			return ReplyAsync("```\n" + Commands.GenerateCommandText("setupdatefrequency") + "```");
+			return ReplyAsync(">>> " + Commands.GenerateCommandText("setupdatefrequency"));
 		}
 
 		[Command("setupdatefrequency")]
 		[Summary("Sets how often new streams should be checked for")]
 		public Task SetChannelAsync(string _){
 			Context.Message.AddReactionAsync(new Discord.Emoji("👎"));
-			return ReplyAsync("```\n" + Commands.GenerateCommandText("setupdatefrequency") + "```");
+			return ReplyAsync(">>> " + Commands.GenerateCommandText("setupdatefrequency"));
 		}
 
 		[Command("setupdatefrequency")]

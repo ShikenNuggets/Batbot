@@ -14,7 +14,7 @@ namespace Batbot{
 
 			{ "list", new List<string>{
 				"**!list** - Lists user IDs for all Twitch streamers",
-				"**!list sorted** - Lists user IDs for all Twitch streamers, sorted by date"
+				"**!list sorted** - Lists user IDs for all Twitch streamers, sorted by last stream date"
 			}},
 
 			{ "live", new List<string>{

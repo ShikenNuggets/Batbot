@@ -9,24 +9,25 @@ namespace Batbot{
 		[Summary("Sets channel for streams to be announced in")]
 		public Task SetChannelAsync(){
 			Context.Message.AddReactionAsync(new Discord.Emoji("👎"));
-			return ReplyAsync("```\n" + Commands.GenerateCommandText("setchannel") + "```");
+			return ReplyAsync(">>> " + Commands.GenerateCommandText("setchannel"));
 		}
 
 		[Command("setchannel")]
 		[Summary("Sets channel for streams to be announced in")]
 		public Task SetChannelAsync(string _){
 			Context.Message.AddReactionAsync(new Discord.Emoji("👎"));
-			return ReplyAsync("Error: !setchannel must include a Discord channel!");
+			return ReplyAsync("Error: !setchannel must include a Discord channel! >>> " + Commands.GenerateCommandText("setchannel"));
 		}
 
 		[Command("setchannel")]
 		[Summary("Sets channel for streams to be announced in")]
 		public Task SetChannelAsync([Remainder] [Summary("The text to echo")] IChannel channel){
-			Context.Message.AddReactionAsync(new Discord.Emoji("👍"));
-
 			if(channel == null){
+				Context.Message.AddReactionAsync(new Discord.Emoji("👎"));
 				return ReplyAsync("Invalid Discord channel!");
 			}
+
+			Context.Message.AddReactionAsync(new Discord.Emoji("👍"));
 
 			bool contains;
 			lock(Data.Channels){

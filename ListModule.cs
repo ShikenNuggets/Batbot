@@ -35,7 +35,7 @@ namespace Batbot{
 		public Task ListAsync([Remainder] string text){
 			if(text != "sorted"){
 				Context.Message.AddReactionAsync(new Discord.Emoji("👎")); //Thumbs down on incorrect command usage
-				return ReplyAsync("```\n" + Commands.GenerateCommandText("list") + "```");
+				return ReplyAsync(">>> " + Commands.GenerateCommandText("list"));
 			}
 
 			Context.Message.AddReactionAsync(new Discord.Emoji("👍"));

@@ -10,7 +10,7 @@ namespace Batbot{
 		public Task ResetAsync(){
 			Context.Message.AddReactionAsync(new Discord.Emoji("👍"));
 
-			return ReplyAsync("```\n" + Commands.GenerateCommandText("reset") + "```");
+			return ReplyAsync(">>> " + Commands.GenerateCommandText("reset"));
 		}
 
 		[Command("reset")]
