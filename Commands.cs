@@ -13,7 +13,8 @@ namespace Batbot{
 			}},
 
 			{ "list", new List<string>{
-				"**!list** - Lists user IDs for all Twitch streamers"
+				"**!list** - Lists user IDs for all Twitch streamers",
+				"**!list sorted** - Lists user IDs for all Twitch streamers, sorted by date"
 			}},
 
 			{ "live", new List<string>{
