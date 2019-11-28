@@ -7,6 +7,8 @@ namespace Batbot{
 	class TwitchAPI{
 		private readonly HttpClient client;
 
+		public static readonly int MaxData = 100;
+
 		public TwitchAPI(){
 			client = new HttpClient();
 			lock(Data.TwitchClientID) client.DefaultRequestHeaders.Add("Client-ID", Data.TwitchClientID);

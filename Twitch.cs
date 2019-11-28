@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Batbot{
 	class Twitch{
@@ -79,27 +80,32 @@ namespace Batbot{
 				return new List<TwitchStream>();
 			}
 
-			string requestString = "streams?first=100&";
+			List<List<StreamerInfo>> lists = new List<List<StreamerInfo>>();
 			lock(Data.Streamers){
-				foreach(StreamerInfo s in Data.Streamers.Values){
-					requestString += "user_id=" + s.id + "&";
-				}
-			}
-
-			var o = twitchAPI.Get(requestString);
-			if(o == null){
-				return null;
+				lists = Utility.SplitList(Data.Streamers.Values.ToList(), TwitchAPI.MaxData);
 			}
 
 			List<TwitchStream> streams = new List<TwitchStream>();
-			for(int i = 0; i < 100; i++){
-				try{
-					TwitchStream ts = new TwitchStream(o, i);
-					streams.Add(ts);
-				}catch(ArgumentOutOfRangeException){
-					break;
-				}catch(Exception e){
-					Debug.Log("Error creating TwitchStream from data! Exception: " + e.Message, Debug.Verbosity.Error);
+			foreach(var streamers in lists){
+				string requestString = "streams?first=" + TwitchAPI.MaxData + "&";
+				foreach(var s in streamers){
+					requestString += "user_id=" + s.id + "&";
+				}
+
+				var o = twitchAPI.Get(requestString);
+				if(o == null){
+					Debug.Log("Twitch API error!", Debug.Verbosity.Error);
+					return null;
+				}
+
+				for(int i = 0; i < TwitchAPI.MaxData; i++){
+					try{
+						streams.Add(new TwitchStream(o, i));
+					}catch(ArgumentOutOfRangeException){
+						break; //No more streams from this API call - TODO relying on exceptions here sucks
+					}catch(Exception e){
+						Debug.Log("Error creating TwitchStream from data! Exception: " + e.Message, Debug.Verbosity.Error);
+					}
 				}
 			}
 
