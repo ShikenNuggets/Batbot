@@ -16,9 +16,16 @@ namespace Batbot{
 		public Task AddAsync([Remainder] [Summary("Name of the Twitch streamer you want to add or remove from the list")] string streamerName){
 			Context.Message.AddReactionAsync(new Discord.Emoji("👍")); //Thumbs up to acknowledge that the command was received
 
-			bool containsKey;
+			bool containsKey = false;
 			lock(Data.Streamers){
-				containsKey = Data.Streamers.ContainsKey(streamerName);
+				foreach(var s in Data.Streamers){
+					if(streamerName.Equals(s.Key, System.StringComparison.OrdinalIgnoreCase)){
+						containsKey = true;
+						streamerName = s.Key;
+						break;
+					}
+				}
+
 				if(containsKey){
 					Data.Streamers.Remove(streamerName);
 				}
