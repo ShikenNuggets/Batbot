@@ -271,6 +271,11 @@ namespace Batbot{
 
 			foreach(ReactionRole rr in rrs){
 				var guild = _client.GetGuild(rr.guildID);
+				if(guild == null){
+					Debug.Log("Invalid GuildID [" + rr.guildID + "]!", Debug.Verbosity.Error);
+					continue;
+				}
+
 				foreach(var c in guild.TextChannels){
 					if(await c.GetMessageAsync(rr.messageID) is IUserMessage message){
 						await CheckReactions(message);
