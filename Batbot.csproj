@@ -218,6 +218,7 @@
     <Compile Include="ListModule.cs" />
     <Compile Include="LiveModule.cs" />
     <Compile Include="MessageModule.cs" />
+    <Compile Include="OAuthToken.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ReactionModule.cs" />
     <Compile Include="ReactionRole.cs" />

@@ -6,6 +6,7 @@ namespace Batbot{
 	class Data{
 		private static readonly string discordClientIDFile = "Data/Discord.txt";
 		private static readonly string twitchClientIDFile = "Data/Twitch.txt";
+		private static readonly string twitchClientSecretFile = "Data/TwitchSecret.txt";
 		private static readonly string streamersFile = "Data/Streamers.json";
 		private static readonly string channelsFile = "Data/Channels.txt";
 		private static readonly string announcedStreamsFile = "Data/AnnouncedStreams.txt";
@@ -17,6 +18,7 @@ namespace Batbot{
 
 		private static string _discordClientID = "";
 		private static string _twitchClientID = "";
+		private static string _twitchClientSecret = "";
 		private static Dictionary<string, StreamerInfo> _streamers = new Dictionary<string, StreamerInfo>();
 		private static List<ulong> _channels = new List<ulong>();
 		private static List<string> _announcedStreams = new List<string>();
@@ -26,6 +28,7 @@ namespace Batbot{
 		private static List<ReactionRole> _reactionRoles = new List<ReactionRole>();
 		public static Dictionary<string, string> CurrentlyLive = new Dictionary<string, string>();
 		private static Dictionary<string, string> CachedGames = new Dictionary<string, string>();
+		public static OAuthToken AccessToken = new OAuthToken();
 
 		public static string DiscordClientID{
 			get{ return _discordClientID; }
@@ -35,6 +38,11 @@ namespace Batbot{
 		public static string TwitchClientID{
 			get{ return _twitchClientID; }
 			set{ _twitchClientID = value; Save(); }
+		}
+
+		public static string TwitchClientSecret{
+			get{ return _twitchClientSecret; }
+			set{ _twitchClientSecret = value; Save(); }
 		}
 
 		public static Dictionary<string, StreamerInfo> Streamers{
@@ -77,7 +85,8 @@ namespace Batbot{
 
 			lock (_discordClientID) _discordClientID = System.IO.File.ReadAllText(discordClientIDFile);
 			lock(_twitchClientID) _twitchClientID = System.IO.File.ReadAllText(twitchClientIDFile);
-			lock(_announcedStreams) _announcedStreams = new List<string>(System.IO.File.ReadAllLines(announcedStreamsFile));
+			lock(_twitchClientSecret) _twitchClientSecret = System.IO.File.ReadAllText(twitchClientSecretFile);
+			lock (_announcedStreams) _announcedStreams = new List<string>(System.IO.File.ReadAllLines(announcedStreamsFile));
 			lock(_announceMessages) _announceMessages = new List<string>(System.IO.File.ReadAllLines(announceMessagesFile));
 
 			lock(_channels){
@@ -255,6 +264,16 @@ namespace Batbot{
 				stream.Close();
 
 				System.IO.File.WriteAllText(twitchClientIDFile, id);
+			}
+
+			if(!System.IO.File.Exists(twitchClientSecretFile)){
+				Console.WriteLine("Enter your Twitch Client Secret:");
+				string id = Console.ReadLine();
+
+				System.IO.FileStream stream = System.IO.File.Create(twitchClientSecretFile);
+				stream.Close();
+
+				System.IO.File.WriteAllText(twitchClientSecretFile, id);
 			}
 
 			if(!System.IO.File.Exists(streamersFile)){

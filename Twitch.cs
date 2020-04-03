@@ -4,7 +4,16 @@ using System.Linq;
 
 namespace Batbot{
 	class Twitch{
-		private static readonly TwitchAPI twitchAPI = new TwitchAPI();
+		private static TwitchAPI _twitchAPI = null;
+		private static TwitchAPI twitchAPI{
+			get{ 
+				if(_twitchAPI == null){
+					_twitchAPI = new TwitchAPI();
+				}
+
+				return _twitchAPI;
+			}
+		}
 
 		public static readonly Dictionary<string, string> gameIDs = new Dictionary<string, string>{
 			{ "Batman: Arkham Asylum", "21101" },
