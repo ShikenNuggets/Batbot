@@ -22,7 +22,8 @@ namespace Batbot{
 			{ "Batman: Arkham Origins Blackgate", "368937" },
 			{ "Batman: Arkham Knight", "459676" },
 			{ "Batman: Arkham VR", "493771" },
-			{ "Batman: Return to Arkham", "492819" }
+			{ "Batman: Return to Arkham", "492819" },
+			{ "Batman Arkham Collection", "518264" }
 		};
 
 		public static string GetGameID(string gameName){

@@ -113,6 +113,7 @@ namespace Batbot{
 
 			await _commands.AddModulesAsync(assembly: Assembly.GetEntryAssembly(), services: null);
 			await _commands.AddModuleAsync<AddModule>(null);
+			await _commands.AddModuleAsync<CheckReactionsModule>(null);
 			await _commands.AddModuleAsync<ClearCacheModule>(null);
 			await _commands.AddModuleAsync<CooldownModule>(null);
 			await _commands.AddModuleAsync<HelpModule>(null);
@@ -124,9 +125,9 @@ namespace Batbot{
 			await _commands.AddModuleAsync<SetChannelModule>(null);
 			await _commands.AddModuleAsync<UpdateFrequencyModule>(null);
 
-			var aTimer = new Timer(1000 * 60 * 60); //1 hour in milliseconds
-			aTimer.Elapsed += new ElapsedEventHandler(HourlyReactionCheckup);
-			aTimer.Start();
+			//var aTimer = new Timer(1000 * 60 * 60); //1 hour in milliseconds
+			//aTimer.Elapsed += new ElapsedEventHandler(HourlyReactionCheckup);
+			//aTimer.Start();
 
 			await Task.Delay(-1);
 		}
@@ -215,7 +216,7 @@ namespace Batbot{
 						gameName = Data.CacheGame(ts.id, Twitch.GetGameName(ts.gameID));
 					}
 
-					if(ts.title.Contains("[nosrl]")){
+					if(ts.title.ToLower().Contains("[nosrl]")){
 						currentLiveStreams.Add(ts.user, gameName + " [nosrl]");
 					}else{
 						currentLiveStreams.Add(ts.user, gameName);
@@ -223,7 +224,7 @@ namespace Batbot{
 
 					lock(Data.AnnouncedStreams){
 						if(Data.AnnouncedStreams.Contains(ts.id)){
-							if(Twitch.gameIDs.ContainsValue(ts.gameID) && !ts.title.Contains("[nosrl]")){
+							if(Twitch.gameIDs.ContainsValue(ts.gameID) && !ts.title.ToLower().Contains("[nosrl]")){
 								streamsAnnounced++; //Only count towards the total if it's still a Batman speedrunning stream
 							}
 							
@@ -231,16 +232,17 @@ namespace Batbot{
 						}
 					}
 
-					if(Twitch.gameIDs.ContainsValue(ts.gameID) && !ts.title.Contains("[nosrl]")){
+					if(Twitch.gameIDs.ContainsValue(ts.gameID) && !ts.title.ToLower().Contains("[nosrl]")){
 						streamsAnnounced++;
 						await AnnounceStream(ts);
 					}else{
 						if(!loggedStreams.Contains(ts.id)){
-							if(ts.title.Contains("[nosrl]")){
+							if(ts.title.ToLower().Contains("[nosrl]")){
 								Debug.Log(ts.user + " is streaming non-speedrunning content, ignoring...");
+							}else{
+								Debug.Log(ts.user + " is streaming a non-Batman game (" + gameName + "), ignoring...");
 							}
 
-							Debug.Log(ts.user + " is streaming a non-Batman game (" + gameName + "), ignoring...");
 							loggedStreams.Add(ts.id);
 						}
 					}
@@ -263,7 +265,7 @@ namespace Batbot{
 			}
 		}
 
-		private async void HourlyReactionCheckup(object _, ElapsedEventArgs __){
+		public static async void HourlyReactionCheckup(object _ = null, ElapsedEventArgs __ = null){
 			List<ReactionRole> rrs;
 			lock(Data.ReactionRoles){
 				rrs = new List<ReactionRole>(Data.ReactionRoles); //Create a copy of the ReactionRole list and use that copy
@@ -277,14 +279,20 @@ namespace Batbot{
 				}
 
 				foreach(var c in guild.TextChannels){
-					if(await c.GetMessageAsync(rr.messageID) is IUserMessage message){
-						await CheckReactions(message);
+					try{
+						if(await c.GetMessageAsync(rr.messageID) is IUserMessage message){
+							await CheckReactions(message);
+						}
+					}catch(Discord.Net.HttpException e){
+						if(e.DiscordCode.HasValue && e.DiscordCode.Value == 50001){
+							continue; //We don't have access to this channel, continue
+						}
 					}
 				}
 			}
 		}
 
-		private async Task CheckReactions(IUserMessage message){
+		private static async Task CheckReactions(IUserMessage message){
 			List<ReactionRole> rrs;
 			lock(Data.ReactionRoles){
 				rrs = new List<ReactionRole>(Data.ReactionRoles); //Create a copy of the ReactionRole list and use that copy

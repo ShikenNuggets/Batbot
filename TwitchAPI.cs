@@ -28,9 +28,9 @@ namespace Batbot{
 			while(true){
 				Task<HttpResponseMessage> response = null;
 				lock(client){
-					//Twitch API is rate limited to 30 requests per minute (one every 2 seconds)
+					//Twitch API is rate limited to 800 requests per minute
 					//Manually throttling ourselves like this is inefficient and error-prone
-					System.Threading.Thread.Sleep(2000);
+					System.Threading.Thread.Sleep(20);
 					response = client.GetAsync("https://api.twitch.tv/helix/" + requestText);
 					response.Wait();
 				}
