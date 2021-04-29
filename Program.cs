@@ -16,6 +16,7 @@ namespace Batbot{
 		private CommandService _commands;
 
 		private static readonly List<string> streamersOnCooldown = new List<string>();
+		private static bool checkingStreams = false;
 
 		bool IsOnCooldown(string twitchID){
 			bool value = false;
@@ -138,7 +139,16 @@ namespace Batbot{
 		}
 
 		private async Task OnReady(){
-			_ = Task.Run(() => CheckStreams());
+			_ = Task.Run(() => {
+				try{
+					CheckStreams();
+				}catch{
+					Debug.Log("An error has occured while attempting to get streams, restarting process...", Debug.Verbosity.Error);
+					System.Threading.Thread.Sleep(1000 * 30); //Wait 30 seconds before starting over
+					checkingStreams = false;
+					OnReady();
+				}
+			});
 			await Task.CompletedTask;
 		}
 
@@ -199,11 +209,17 @@ namespace Batbot{
 					System.Threading.Thread.Sleep((int)(1000.0f * 60.0f * Data.UpdateFrequency)); //Every [updateFrequency] minutes
 				}
 
+				if(checkingStreams){
+					continue; //Prevent it from checking for streams twice at the same time
+				}
+				checkingStreams = true;
+
 				Debug.Log("Checking for new streams to announce...", Debug.Verbosity.Verbose);
 				List<TwitchStream> streams = Twitch.GetCurrentStreams();
 				if(streams == null){
 					Debug.Log("An error has occured while attempting to get streams, restarting process...", Debug.Verbosity.Error);
 					System.Threading.Thread.Sleep(1000 * 30); //Wait 30 seconds before starting over
+					checkingStreams = false;
 					continue;
 				}
 
@@ -262,6 +278,8 @@ namespace Batbot{
 
 				lock(Data.CurrentlyLive){ Data.CurrentlyLive = currentLiveStreams; }
 				Data.Save();
+
+				checkingStreams = false;
 			}
 		}
 

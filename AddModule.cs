@@ -43,7 +43,16 @@ namespace Batbot{
 				return ReplyAsync("I couldn't find any Twitch streamers with that name. Sorry!");
 			}
 
-			lock(Data.Streamers) Data.Streamers.Add(user.displayName, new StreamerInfo(user.id));
+			lock(Data.Streamers){
+				foreach(var s in Data.Streamers){
+					if(s.Value.id == user.id){
+						return ReplyAsync("User is currently in list with an older username (**" + Utility.SanitizeForMarkdown(s.Key) + ")");
+					}
+				}
+
+				Data.Streamers.Add(user.displayName, new StreamerInfo(user.id));
+			}
+
 			Data.Save();
 			return ReplyAsync("Success - **" + Utility.SanitizeForMarkdown(user.displayName) + "** will now be announced. There are now " + (numStreamers + 1) + " streamers in the list.");
 		}
