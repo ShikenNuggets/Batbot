@@ -152,12 +152,14 @@ namespace Batbot{
 
 		public static void ClearCache(){
 			if(CurrentlyLive.Count == 0){
-				System.IO.File.WriteAllText(announcedStreamsFile, string.Empty);
-				lock (_announcedStreams) _announcedStreams.Clear();
+				lock(announcedStreamsFile) System.IO.File.WriteAllText(announcedStreamsFile, string.Empty);
+				lock(_announcedStreams) _announcedStreams.Clear();
 			}
 
-			System.IO.File.WriteAllText(cachedGamesFile, string.Empty);
+			lock(cachedGamesFile) System.IO.File.WriteAllText(cachedGamesFile, string.Empty);
 			lock(CachedGames) CachedGames.Clear();
+			
+			Save();
 		}
 
 		public static bool IsCached(string id){
@@ -195,6 +197,11 @@ namespace Batbot{
 		}
 
 		private static void DeserializeRoles(){
+			if(!System.IO.File.Exists(reactionRoleFile)){
+				//Don't worry about any of this
+				return;
+			}
+
 			List<ReactionRole> rrs = new List<ReactionRole>();
 			List<string> fileText = new List<string>(System.IO.File.ReadAllLines(reactionRoleFile));
 
