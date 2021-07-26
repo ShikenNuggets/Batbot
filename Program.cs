@@ -228,10 +228,10 @@ namespace Batbot{
 				int streamsAnnounced = 0;
 				foreach(TwitchStream ts in streams){
 					string gameName;
-					if(Data.IsCached(ts.id)){
-						gameName = Data.GetCachedGame(ts.id);
+					if(Data.IsCached(ts.gameID)){
+						gameName = Data.GetCachedGame(ts.gameID);
 					}else{
-						gameName = Data.CacheGame(ts.id, Twitch.GetGameName(ts.gameID));
+						gameName = Data.CacheGame(ts.gameID, Twitch.GetGameName(ts.gameID));
 					}
 
 					if(ts.title.ToLower().Contains("[nosrl]")){
