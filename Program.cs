@@ -16,7 +16,7 @@ namespace Batbot{
 		private CommandService _commands;
 
 		private static readonly List<string> streamersOnCooldown = new List<string>();
-		private static bool checkingStreams = false;
+		private static volatile bool checkingStreams = false;
 
 		bool IsOnCooldown(string twitchID){
 			bool value = false;
@@ -120,6 +120,7 @@ namespace Batbot{
 			await _commands.AddModuleAsync<HelpModule>(null);
 			await _commands.AddModuleAsync<ListModule>(null);
 			await _commands.AddModuleAsync<LiveModule>(null);
+			await _commands.AddModuleAsync<PingModule>(null);
 			await _commands.AddModuleAsync<MessageModule>(null);
 			await _commands.AddModuleAsync<ReactionModule>(null);
 			await _commands.AddModuleAsync<ResetModule>(null);
@@ -203,6 +204,7 @@ namespace Batbot{
 
 			int iterations = 0;
 			while(true){
+				bool changesThisCycle = false;
 				currentLiveStreams = new Dictionary<string, string>();
 
 				if(iterations > 0){
@@ -214,7 +216,7 @@ namespace Batbot{
 				}
 				checkingStreams = true;
 
-				Debug.Log("Checking for new streams to announce...", Debug.Verbosity.Verbose);
+				//Debug.Log("Checking for new streams to announce...", Debug.Verbosity.Verbose);
 				List<TwitchStream> streams = Twitch.GetCurrentStreams();
 				if(streams == null){
 					Debug.Log("An error has occured while attempting to get streams, restarting process...", Debug.Verbosity.Error);
@@ -250,6 +252,7 @@ namespace Batbot{
 
 					if(Twitch.gameIDs.ContainsValue(ts.gameID) && !ts.title.ToLower().Contains("[nosrl]")){
 						streamsAnnounced++;
+						changesThisCycle = true;
 						await AnnounceStream(ts);
 					}else{
 						if(!loggedStreams.Contains(ts.id)){
@@ -273,8 +276,12 @@ namespace Batbot{
 				}
 
 				iterations++;
-				Debug.Log(streamsAnnounced + " previously-announced stream(s) are still live with Batman content", Debug.Verbosity.Verbose);
-				Debug.Log("Check " + iterations + " complete. Program is now idle.", Debug.Verbosity.Verbose);
+
+				if(changesThisCycle){
+					Debug.Log(streamsAnnounced + " previously-announced stream(s) are still live with Batman content", Debug.Verbosity.Verbose);
+				}
+				
+				//Debug.Log("Check " + iterations + " complete. Program is now idle.", Debug.Verbosity.Verbose);
 
 				lock(Data.CurrentlyLive){ Data.CurrentlyLive = currentLiveStreams; }
 				Data.Save();

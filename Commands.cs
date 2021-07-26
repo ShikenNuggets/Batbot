@@ -28,6 +28,10 @@ namespace Batbot{
 				"**!message edit [index] [new-message]** - Edits a custom message at the specified index"
 			}},
 
+			{ "ping", new List<string>{
+				"**!ping** - Bot replys with \"pong\" (useful for checking if it's alive)"
+			}},
+
 			{ "reaction", new List<string>{
 				"**!reaction add [message-id] [channel] [emote] [role]** - Creates a Reaction Role",
 				"**!reaction remove [index]** - Removes a Reaction Role at the specified index",
