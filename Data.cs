@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+
 using Newtonsoft.Json;
 
 namespace Batbot{
@@ -126,24 +128,44 @@ namespace Batbot{
 		}
 
 		public static void Save(){
-			lock(_streamers) System.IO.File.WriteAllText(streamersFile, JsonConvert.SerializeObject(_streamers));
-			lock(_announcedStreams) System.IO.File.WriteAllLines(announcedStreamsFile, _announcedStreams);
-			lock(_announceMessages) System.IO.File.WriteAllLines(announceMessagesFile, _announceMessages);
-
-			lock(_channels){
-				var channelText = new List<string>();
-				foreach(ulong u in _channels){
-					channelText.Add(u.ToString());
+			lock(_announcedStreams){
+				if(HasFileChanged(announcedStreamsFile, _announcedStreams)){
+					System.IO.File.WriteAllLines(announcedStreamsFile, _announcedStreams);
 				}
-
-				System.IO.File.WriteAllLines(channelsFile, channelText);
 			}
 
-			System.IO.File.WriteAllText(updateFrequencyFile, _updateFrequency.ToString());
-			System.IO.File.WriteAllText(cooldownFile, _cooldown.ToString());
+			lock(_announceMessages){
+				if(HasFileChanged(announceMessagesFile, _announceMessages)){
+					System.IO.File.WriteAllLines(announceMessagesFile, _announceMessages);
+				}
+			}
 
+			List<string> serializedText = new List<string>();
+			lock(_channels){
+				serializedText = new List<string>();
+				foreach(ulong u in _channels){
+					serializedText.Add(u.ToString());
+				}
+			}
+			if(HasFileChanged(channelsFile, serializedText)){
+				System.IO.File.WriteAllLines(channelsFile, serializedText);
+			}
+
+			if(HasFileChanged(updateFrequencyFile, _updateFrequency.ToString())){
+				System.IO.File.WriteAllText(updateFrequencyFile, _updateFrequency.ToString());
+			}
+
+			if(HasFileChanged(cooldownFile, _cooldown.ToString())){
+				System.IO.File.WriteAllText(cooldownFile, _cooldown.ToString());
+			}
+
+			string cStr = "";
 			lock(CachedGames){
-				System.IO.File.WriteAllText(cachedGamesFile, JsonConvert.SerializeObject(CachedGames));
+				cStr = JsonConvert.SerializeObject(CachedGames);
+				
+			}
+			if(HasFileChanged(cachedGamesFile, cStr)){
+				System.IO.File.WriteAllText(cachedGamesFile, cStr);
 			}
 
 			SerializeStreamers();
@@ -193,7 +215,9 @@ namespace Batbot{
 				}
 			}
 
-			System.IO.File.WriteAllLines(reactionRoleFile, rrText);
+			if(HasFileChanged(reactionRoleFile, rrText)){
+				System.IO.File.WriteAllLines(reactionRoleFile, rrText);
+			}
 		}
 
 		private static void DeserializeRoles(){
@@ -225,7 +249,10 @@ namespace Batbot{
 				}
 			}
 
-			System.IO.File.WriteAllText(streamersFile, JsonConvert.SerializeObject(streamerText));
+			string serializedText = JsonConvert.SerializeObject(streamerText);
+			if(HasFileChanged(streamersFile, serializedText)){
+				System.IO.File.WriteAllText(streamersFile, serializedText);
+			}
 		}
 
 		private static void DeserializeStreamers(){
@@ -325,6 +352,20 @@ namespace Batbot{
 				stream.Close();
 				System.IO.File.WriteAllText(cachedGamesFile, JsonConvert.SerializeObject(new Dictionary<string, string>()));
 			}
+		}
+
+		private static bool HasFileChanged(string file, string serializedObject){
+			string fileText = System.IO.File.ReadAllText(file);
+			return !fileText.SequenceEqual(serializedObject);
+		}
+
+		private static bool HasFileChanged(string file, List<string> serializedObject){
+			var fileText = System.IO.File.ReadAllLines(file);
+			if(fileText.Length != serializedObject.Count){
+				return true;
+			}
+
+			return !fileText.SequenceEqual(serializedObject);
 		}
 	}
 }
