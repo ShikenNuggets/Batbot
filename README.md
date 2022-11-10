@@ -1,8 +1,10 @@
+# This project is no longer being maintained. I do not recommend using this.
+
 # Batbot
 
 This bot has two key purposes:  
 1. Announce Twitch streams for specified Batman Arkham speedrunners only when they're streaming an Arkham game
-2. Modify user roles based on reactions to specified messages (e.g. "react with a 👍 to get the 'Racing' role")
+2. Modify user roles based on reactions to specified messages (e.g. "react with a 👍 to get the 'Racing' role") (this functionality was disabled some time ago but the code is still present)
 
 The bot isn't really doing anything new or innovative (it's just using some basic aspects of the Twitch and Discord API's, and was created solely as a replacement for other bots), but I've found creating and hosting this myself to be more reliable than the public offerings with similar functionality. Perhaps someone may find this code useful. This was setup specifically for use with the Batman speedrunning Discord server, but should be relatively easily to repurpose for use by other servers and for other games.
 
